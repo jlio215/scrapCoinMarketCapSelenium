@@ -1,24 +1,17 @@
-
 from dataweb import Dataweb
-import pandas as pd
 
+scraper = Dataweb()
+df = scraper.obtener_datos()
 
-
-def main():
-    dataweb = Dataweb()
-    df = pd.DataFrame(dataweb.obtener_datos())
-    df.to_csv("data_web.csv", index=False)
-
-
-
-# Uso de la clase
-if __name__ == "__main__":
-    scraper = Dataweb()
-    datos = scraper.obtener_datos()
-    main()
-    
-    if not datos.empty:
-        print("Datos obtenidos exitosamente:")
-        print(datos.head())
-    else:
-        print("No se pudieron obtener los datos.")
+if not df.empty:
+    df_limpio = scraper.limpieza_datos(df)
+    df_limpio.to_csv(
+    'criptomonedas.csv',
+    index=False,
+    sep=';',
+    encoding='utf-8-sig'
+)
+    print("✅ Datos limpios guardados en criptomonedas.csv")
+    print(df_limpio.head())
+else:
+    print("❌ No se pudo obtener la información.")
