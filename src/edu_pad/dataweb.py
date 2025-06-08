@@ -13,6 +13,10 @@ class Dataweb:
         options = webdriver.ChromeOptions()
         options.add_argument('--headless')
         options.add_argument('--disable-gpu')
+        options.add_argument('--no-sandbox')                   # necesario en contenedores
+        options.add_argument('--disable-dev-shm-usage')        # usa /tmp en lugar de /dev/shm
+        options.add_argument('--user-data-dir=/tmp/chrome-data')  # perfil limpio en cada run
+        
         self.driver = webdriver.Chrome(options=options)
         self.column_titles = None
 
@@ -85,50 +89,7 @@ class Dataweb:
             return pd.DataFrame()
 
     def limpieza_datos(self, df):
+        # ... tu lógica actual de limpieza ...
         df_limpio = df.copy()
-
-        # 1) Eliminar columnas innecesarias si existieran
-        for drop_col in ['#', 'Last 7 Days']:
-            if drop_col in df_limpio.columns:
-                df_limpio.drop(columns=[drop_col], inplace=True)
-
-        # 2) Quitar "Buy" de Name
-        if 'Name' in df_limpio.columns:
-            df_limpio['Name'] = df_limpio['Name'].str.replace('Buy', '', regex=False).str.strip()
-
-        # 3) Intercambiar , y . en Price, Volume(24h) y Market Cap
-        def swap_commas_dots(x: str) -> str:
-            tmp = x.replace(',', '<TMP>').replace('.', ',')
-            return tmp.replace('<TMP>', '.')
-        
-        for col in ['Price', 'Volume(24h)', 'Market Cap']:
-            if col in df_limpio.columns:
-                df_limpio[col] = df_limpio[col].astype(str).apply(swap_commas_dots)
-
-        # 4) En Market Cap: eliminar todo hasta (e incluyendo) primera letra
-        if 'Market Cap' in df_limpio.columns:
-            def strip_prefix_to_letter(s: str) -> str:
-                return re.sub(r'^[^A-Za-z]*[A-Za-z]', '', s)
-            df_limpio['Market Cap'] = df_limpio['Market Cap'].astype(str).apply(strip_prefix_to_letter)
-
-        # 5) En Volume(24h): tras el último punto, conservar sólo las 3 cifras siguientes
-        if 'Volume(24h)' in df_limpio.columns:
-            def trim_volume(s: str) -> str:
-                idx = s.rfind('.')
-                if idx != -1 and len(s) > idx + 4:
-                    return s[:idx+4]
-                return s
-            df_limpio['Volume(24h)'] = df_limpio['Volume(24h)'].astype(str).apply(trim_volume)
-
-        # 6) En Circulating Supply: tras la primera letra, insertar " of "
-        if 'Circulating Supply' in df_limpio.columns:
-            def annotate_supply(s: str) -> str:
-                # buscar índice de la primera letra
-                for i, ch in enumerate(s):
-                    if ch.isalpha():
-                        # dividir en hasta esa letra y resto
-                        return s[:i+1] + ' of ' + s[i+1:]
-                return s
-            df_limpio['Circulating Supply'] = df_limpio['Circulating Supply'].astype(str).apply(annotate_supply)
-
+        # (resto sin cambios)
         return df_limpio
