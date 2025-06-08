@@ -1,27 +1,34 @@
-from dataweb import Dataweb
-from database import DataBase
+from extract import extract_data
+from clean import clean_data
+from ingest import ingest_data
+import pandas as pd
 
-scraper = Dataweb()
-df = scraper.obtener_datos()
+def main():
+    try:
+        df = extract_data()
 
-if not df.empty:
-    df_limpio = scraper.limpieza_datos(df)
-    df_limpio.to_csv(
-    'criptomonedas.csv',
-    index=False,
-    sep=';',
-    encoding='utf-8-sig'
-)
-    database = DataBase()
-    nombre_tabla = "crypto_analisis"
-    database.insert_data(df_limpio,nombre_tabla)
-    print("*************** Insertar los datos obtenidos en la base datos tabla: {}*********".format(nombre_tabla))
-    print(df.shape)
-    print(df.head())
-    df_2 = database.read_data(nombre_tabla)
-    print(df_2.shape)
-    print(df_2.head())
-    print("✅ Datos limpios guardados en criptomonedas.csv")
-    print(df_limpio.head())
-else:
-    print("❌ No se pudo obtener la información.")
+        if df.empty:
+            print("❌ No se pudo obtener la información.")
+            return
+
+        df_clean = clean_data(df)
+        
+        if df_clean.empty:
+            print("❌ La limpieza de datos falló o produjo un DataFrame vacío.")
+            return
+
+        df_clean.to_csv(
+            'criptomonedas.csv',
+            index=False,
+            sep=';',
+            encoding='utf-8-sig'
+        )
+        print("✅ Datos limpios guardados en criptomonedas.csv")
+
+        ingest_data(df_clean)
+        print("✅ Flujo de extracción, limpieza e ingestión finalizado correctamente.")
+    except Exception as e:
+        print(f"❌ Error general en el flujo principal: {e}")
+
+if __name__ == "__main__":
+    main()

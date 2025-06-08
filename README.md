@@ -37,11 +37,12 @@
    ```
 2. Crea un entorno virtual:
    ```
-   python -m venv venv
+   python3 -m venv venv
    ```
 3. Activa el entorno virtual:
    ```
    venv\Scripts\activate
+   linux o mac: source venv/bin/activate
    ```
 4. Deberás ver `(venv)` al inicio de la línea de comandos, indicando que el entorno está activado
 
