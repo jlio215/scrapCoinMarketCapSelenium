@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Paso 1 - Checkout del repositorio
         uses: actions/checkout@v4
@@ -24,20 +23,20 @@ jobs:
       - name: Paso 4 - Ejecutar extract.py
         run: |
           docker run --rm \
-            -v "${{ github.workspace }}/src/edu_pad/static/csv":/pad_2025_1_2/static/csv \
-            -v "${{ github.workspace }}/src/edu_pad/static/db":/pad_2025_1_2/static/db \
+            -v "${{ github.workspace }}/static/csv":/scrapCoinMarketCapSelenium/static/csv \
+            -v "${{ github.workspace }}/static/db":/scrapCoinMarketCapSelenium/static/db \
             contenedor python3 src/edu_pad/extract.py
 
       - name: Paso 5 - Ejecutar clean.py
         run: |
           docker run --rm \
-            -v "${{ github.workspace }}/src/edu_pad/static/csv":/pad_2025_1_2/static/csv \
-            -v "${{ github.workspace }}/src/edu_pad/static/db":/pad_2025_1_2/static/db \
+            -v "${{ github.workspace }}/static/csv":/scrapCoinMarketCapSelenium/static/csv \
+            -v "${{ github.workspace }}/static/db":/scrapCoinMarketCapSelenium/static/db \
             contenedor python3 src/edu_pad/clean.py
 
       - name: Paso 6 - Ejecutar ingest.py
         run: |
           docker run --rm \
-            -v "${{ github.workspace }}/src/edu_pad/static/csv":/pad_2025_1_2/static/csv \
-            -v "${{ github.workspace }}/src/edu_pad/static/db":/pad_2025_1_2/static/db \
+            -v "${{ github.workspace }}/static/csv":/scrapCoinMarketCapSelenium/static/csv \
+            -v "${{ github.workspace }}/static/db":/scrapCoinMarketCapSelenium/static/db \
             contenedor python3 src/edu_pad/ingest.py
