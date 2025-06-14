@@ -1,0 +1,4 @@
+CARPETA CON VIDEO: https://drive.google.com/drive/folders/1k--kASJ1xB-9k5oeR75edGg0AoAmBBD3?usp=sharing
+
+1.Explicaciòn y ejecuciòn en local.
+2.Ejecucion de github actions.
